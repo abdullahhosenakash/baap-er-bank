@@ -1,47 +1,46 @@
 function getInputValue(inputId) {
-    const inputField = document.getElementById(inputId);
-    const inputAmount = parseFloat(inputField.value);
-    inputField.value = '';
-    return inputAmount;
+    const inputAmountText = document.getElementById(inputId);
+    const inputAmountValue = inputAmountText.value;
+    const inputAmount = parseFloat(inputAmountValue);
+    inputAmountText.value = '';
+    if (inputAmountValue.length == inputAmount.toString().length) {
+        return inputAmount;
+    }
+}
+
+function updateBalance(inputId, balanceId, isDeposit, isWithdraw) {
+    const balanceText = document.getElementById(balanceId);
+    const balance = parseFloat(balanceText.innerText);
+    const totalBalanceText = document.getElementById('total-balance');
+    const totalBalance = parseFloat(totalBalanceText.innerText);
+    const inputValue = getInputValue(inputId);
+    let newTotalBalance = totalBalance;
+    if (inputValue > 0) {
+        if (isDeposit || newTotalBalance > inputValue) {
+            const updateBalance = balance + inputValue;
+            balanceText.innerText = updateBalance;
+        }
+        else {
+            alert("You don't have sufficient balance!");
+        }
+
+        if (isDeposit) {
+            newTotalBalance = inputValue + totalBalance;
+        }
+        else if (isWithdraw && inputValue <= newTotalBalance) {
+            newTotalBalance = totalBalance - inputValue;
+        }
+        totalBalanceText.innerText = newTotalBalance;
+    }
+    else {
+        alert('Please enter correct amount');
+    }
 }
 
 document.getElementById('deposit-button').addEventListener('click', function () {
-    const depositAmount = getInputValue('input-deposit');
-
-
-    const totalDepositAmountText = document.getElementById('total-deposit');
-    const totalDepositAmount = parseFloat(totalDepositAmountText.innerText);
-    const updateDeposit = depositAmount + totalDepositAmount;
-    totalDepositAmountText.innerText = updateDeposit;
-
-
-    // get the total balance
-    const totalBalanceText = document.getElementById('total-balance');
-    const totalBalance = parseFloat(totalBalanceText.innerText);
-    const updateBalance = totalBalance + depositAmount;
-
-    // set the updated value of balance 
-    totalBalanceText.innerText = updateBalance;
+    updateBalance('input-deposit', 'total-deposit', true, false);
 });
 
 document.getElementById('withdraw-button').addEventListener('click', function () {
-    const withdrawAmount = getInputValue('input-withdraw');
-
-
-    const totalWithdrawAmountText = document.getElementById('total-withdraw');
-    const totalWithdrawAmount = parseFloat(totalWithdrawAmountText.innerText);
-    const updateWithdraw = withdrawAmount + totalWithdrawAmount;
-
-
-    // set the updated value of withdraw 
-    totalWithdrawAmountText.innerText = updateWithdraw;
-
-
-    // get the total balance
-    const totalBalanceText = document.getElementById('total-balance');
-    const totalBalance = parseFloat(totalBalanceText.innerText);
-    const updateBalance = totalBalance - withdrawAmount;
-
-    // set the updated value of balance 
-    totalBalanceText.innerText = updateBalance;
-});
+    updateBalance('input-withdraw', 'total-withdraw', false, true);
+})
